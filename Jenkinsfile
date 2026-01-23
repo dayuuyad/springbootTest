@@ -24,7 +24,7 @@ pipeline {
             }
             stage('docker run') {
                 steps {
-                    sh 'docker run -d -p 8081:8081 myapp:V1.3'
+                    sh 'docker run -d --name springbootTest -p 8081:8081 myapp:V1.3'
                 }
             }
     }
