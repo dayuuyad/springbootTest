@@ -24,6 +24,11 @@ pipeline {
                     sh 'docker build -t myapp:V1.3 .'
                 }
             }
+            stage('docker run') {
+                steps {
+                    sh 'docker run -d -p 8081:8081 myapp:V1.3'
+                }
+            }
     }
     post {
       always {
