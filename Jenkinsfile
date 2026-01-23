@@ -19,12 +19,17 @@ pipeline {
             }
             stage('docker build') {
                 steps {
-                    sh 'docker build -t myapp:V1.3 .'
+                    sh '''
+                        docker stop springbootTest
+                        docker rm springbootTest
+                        docker rmi springbootTest
+                        docker build -t springbootTest:V1.0 .
+                    '''
                 }
             }
             stage('docker run') {
                 steps {
-                    sh 'docker run -d --name springbootTest -p 8081:8081 myapp:V1.3'
+                    sh 'docker run -d --name springbootTest -p 8081:8081 springbootTest:V1.0'
                 }
             }
     }
