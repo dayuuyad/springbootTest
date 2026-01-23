@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'JDK8'  // 使用配置的 JDK 8
+    }
+    environment {
+        // 设置 Maven 路径
+        MAVEN_HOME = '/var/jenkins_home/apache-maven-3.9.12'
+        PATH = "$MAVEN_HOME/bin:$PATH"
+    }
+    stages {
+            stage('pull') {
+                steps {
+                    git credentialsId: '112ff5dee-66f5-4fcc-8f99-563f88813d2c', url: 'git@github.com:dayuuyad/springbootTest.git'
+                }
+            }
+            stage('build') {
+                steps {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+            stage('docker build') {
+                steps {
+                    sh 'docker build -t myapp:V1.3 .'
+                }
+            }
+    }
+    post {
+      always {
+            emailext body: '''$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
+
+            Check console output at $BUILD_URL to view the results.''', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: '904977900@qq.com'
+      }
+    }
+}
