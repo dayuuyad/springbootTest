@@ -20,16 +20,26 @@ pipeline {
             stage('docker build') {
                 steps {
                     sh '''
-                        docker stop springbootTest
-                        docker rm springbootTest
-                        docker rmi springbootTest
-                        docker build -t springbootTest:V1.0 .
+                        if docker ps -a --format '{{.Names}}' | grep -q '^springboot-test$'; then
+                            docker rm -f springboot-test
+                            echo "容器 springboot-test 已删除"
+                        else
+                            echo "容器 springboot-test 不存在"
+                        fi
+
+                        if docker images --format '{{.Repository}}:{{.Tag}}' | grep -q '^springboot-test:1.0$'; then
+                            docker rmi springboot-test:1.0
+                            echo "镜像 springboot-test:1.0 已删除"
+                        else
+                            echo "镜像 springboot-test:1.0 不存在"
+                        fi
+                        docker build -t springboot-test:V1.0 .
                     '''
                 }
             }
             stage('docker run') {
                 steps {
-                    sh 'docker run -d --name springbootTest -p 8081:8081 springbootTest:V1.0'
+                    sh 'docker run -d --name springboot-test -p 8081:8081 springbootTest:V1.0'
                 }
             }
     }
